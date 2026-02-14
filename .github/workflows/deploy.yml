@@ -34,38 +34,70 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Checkout source repository (Kerrigan)
-        uses: actions/checkout@v4
-        with:
-          repository: Coalescent-Emergence/Kerrigan
-          token: ${{ secrets.GITHUB_TOKEN }}
-          path: source-repo
-
-      - name: Copy MVP tracker files
+      - name: Sparse checkout static files from Kerrigan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Copy the MVP tracker files from the source repository
-          # Adjust these paths based on where the files are located in Kerrigan
+          set -euo pipefail
+          mkdir -p source-repo
+          cd source-repo
+          git init
+          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/Coalescent-Emergence/Kerrigan.git"
+          git config core.sparseCheckout true
+          cat > .git/info/sparse-checkout <<'EOF'
+          /docs/mvp-tracker.html
+          /docs/index.html
+          /docs/_config.yml
+          /MVP_STATUS.md
+          /docs/TRACKER_SETUP.md
+          /docs/README.md
+          /docs/mvp.md
+          /GITHUB_PAGES_SETUP.md
+          /README.md
+          EOF
+          # Fetch latest main by default (adjust ref as needed)
+          git fetch --depth=1 origin main
+          git checkout FETCH_HEAD
 
-          # Create necessary directories
+      - name: Validate and copy static files
+        run: |
+          set -euo pipefail
+          SRC=source-repo
           mkdir -p docs
+          # Allowed top-level path patterns and extensions
+          ALLOWED_PATHS=("docs/" "MVP_STATUS.md" "GITHUB_PAGES_SETUP.md" "README.md")
+          ALLOWED_EXTS="html css js svg png jpg jpeg webp woff2 ico json md"
 
-          # Copy HTML, CSS, JS, and other static files
-          # Common patterns for MVP tracker files:
-          if [ -d "source-repo/mvp-tracker" ]; then
-            cp -r source-repo/mvp-tracker/* docs/
-          elif [ -d "source-repo/docs/mvp-tracker" ]; then
-            cp -r source-repo/docs/mvp-tracker/* docs/
-          elif [ -d "source-repo/progress-tracker" ]; then
-            cp -r source-repo/progress-tracker/* docs/
-          elif [ -f "source-repo/mvp-tracker.html" ]; then
-            cp source-repo/mvp-tracker.html docs/index.html
-            # Copy any associated CSS/JS files
-            [ -f "source-repo/mvp-tracker.css" ] && cp source-repo/mvp-tracker.css docs/
-            [ -f "source-repo/mvp-tracker.js" ] && cp source-repo/mvp-tracker.js docs/
-          fi
+          is_allowed_path() {
+            local rel="$1"
+            for p in "${ALLOWED_PATHS[@]}"; do
+              case "$rel" in
+                "$p"* ) return 0 ;;
+              esac
+            done
+            return 1
+          }
 
-          # If no MVP tracker found, create a placeholder
-          if [ ! -f "docs/index.html" ]; then
+          for f in $(find "$SRC" -type f); do
+            rel="${f#$SRC/}"
+            ext="${f##*.}"
+            # normalize extension to lower
+            ext="$(echo "$ext" | tr '[:upper:]' '[:lower:]')"
+            case " $ALLOWED_EXTS " in
+              *" $ext "*) ;;
+              *) echo "Skipping disallowed extension: $rel"; continue ;;
+            esac
+            if ! is_allowed_path "$rel"; then
+              echo "Skipping file outside allowed paths: $rel"
+              continue
+            fi
+            echo "Copying $rel"
+            mkdir -p "$(dirname "docs/$rel")"
+            cp "$f" "docs/$rel"
+          done
+
+          # If no index found, create a small placeholder
+          if [ ! -f "docs/index.html" ] && [ ! -f "docs/mvp-tracker.html" ]; then
             echo "Warning: No MVP tracker files found. Creating placeholder."
             echo '<!DOCTYPE html><html><head><title>MVP Tracker</title></head><body><h1>MVP Tracker</h1><p>Awaiting content sync...</p></body></html>' > docs/index.html
           fi

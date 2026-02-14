@@ -99,3 +99,25 @@ Once deployed, the site will be available at:
 - Verify that `docs/index.html` exists after sync
 - Check GitHub Pages settings are configured correctly
 - Wait a few minutes for the deployment to propagate
+
+## Sparse checkout from Kerrigan (implementation notes)
+
+This repository's deployment workflow uses a git sparse-checkout to fetch only the minimal static files required for the MVP tracker from the private `Coalescent-Emergence/Kerrigan` repository.
+
+- Authentication: the workflow uses the default `GITHUB_TOKEN` (as configured in Actions) to authenticate to the Kerrigan repo. Ensure your organization allows the Actions `GITHUB_TOKEN` to access other organization repositories; otherwise provide a short-lived PAT in a secret.
+- Whitelist: only these paths are fetched and copied into `docs/`:
+  - `docs/mvp-tracker.html`
+  - `docs/index.html`
+  - `docs/_config.yml`
+  - `MVP_STATUS.md`
+  - `docs/TRACKER_SETUP.md`
+  - `docs/README.md`
+  - `docs/mvp.md`
+  - `GITHUB_PAGES_SETUP.md`
+  - `README.md`
+
+- Allowed extensions copied: `.html`, `.css`, `.js`, `.svg`, `.png`, `.jpg`, `.jpeg`, `.webp`, `.woff2`, `.ico`, `.json`, `.md`.
+
+- Security: the workflow explicitly rejects any files outside the whitelist and will skip files with disallowed extensions. Server-side code, `.env*` files, private keys, or other sensitive content are never fetched or copied.
+
+If you need to change the sparse paths, edit `.github/workflows/deploy.yml` and update the `.git/info/sparse-checkout` entries accordingly.
