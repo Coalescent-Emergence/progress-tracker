@@ -14,7 +14,7 @@ on:
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: read
+  contents: write  # Allow sync job to commit and push changes
   pages: write
   id-token: write
 
@@ -75,7 +75,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add docs/
-          if git diff-index --quiet HEAD --; then
+          if git diff --cached --quiet; then
             echo "No changes to commit"
           else
             git commit -m "Sync MVP tracker from source repository"
@@ -90,14 +90,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
+      - name: Checkout latest changes
         uses: actions/checkout@v4
         with:
-          # Pull the latest commit from sync job
-          fetch-depth: 0
+          ref: ${{ github.ref }}
 
-      - name: Pull latest changes
-        run: git pull origin ${{ github.ref_name }}
+      - name: Pull latest commit from sync
+        run: git pull --ff-only origin ${{ github.ref_name }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

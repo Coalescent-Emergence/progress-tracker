@@ -52,7 +52,9 @@ The deployment workflow runs in the following scenarios:
 
 To set up automatic deployment when the MVP tracker is updated in the Kerrigan repository:
 
-1. In the Kerrigan repository, create a workflow file `.github/workflows/trigger-deploy.yml`:
+1. Create a Personal Access Token (PAT) with `repo` scope for triggering workflows
+2. Add it as a secret named `TRIGGER_TOKEN` in the Kerrigan repository
+3. In the Kerrigan repository, create a workflow file `.github/workflows/trigger-deploy.yml`:
 
 ```yaml
 name: Trigger Progress Tracker Deployment
@@ -72,10 +74,12 @@ jobs:
         run: |
           curl -X POST \
             -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Authorization: token ${{ secrets.TRIGGER_TOKEN }}" \
             https://api.github.com/repos/Coalescent-Emergence/progress-tracker/dispatches \
             -d '{"event_type":"deploy"}'
 ```
+
+**Note**: The `TRIGGER_TOKEN` must be a Personal Access Token with `repo` scope. The default `GITHUB_TOKEN` cannot trigger workflows in other repositories.
 
 ## File Structure
 
