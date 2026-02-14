@@ -11,28 +11,7 @@ This repository automatically syncs the MVP tracker from the source repository a
    - Source: **GitHub Actions**
 3. Save the settings
 
-### 2. Create Personal Access Token (PAT)
-
-To allow this repository to pull files from the private Kerrigan repository, you need to create a Personal Access Token:
-
-1. Go to GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. Click "Generate new token (classic)"
-3. Give it a descriptive name like "Progress Tracker Sync"
-4. Set expiration as needed
-5. Select the following scopes:
-   - `repo` (Full control of private repositories)
-6. Click "Generate token"
-7. **Copy the token immediately** (you won't be able to see it again)
-
-### 3. Add the Token as a Repository Secret
-
-1. Go to this repository's Settings → Secrets and variables → Actions
-2. Click "New repository secret"
-3. Name: `SOURCE_REPO_TOKEN`
-4. Value: Paste the PAT you created
-5. Click "Add secret"
-
-### 4. Configure Permissions
+### 2. Configure Permissions
 
 1. Go to repository Settings → Actions → General
 2. Scroll to "Workflow permissions"
@@ -109,9 +88,8 @@ Once deployed, the site will be available at:
 - Verify that Pages is set to deploy from "GitHub Actions"
 
 ### Sync fails with authentication errors
-- Verify that `SOURCE_REPO_TOKEN` secret is set correctly
-- Ensure the PAT has `repo` scope
-- Check that the PAT hasn't expired
+- Verify that the repository has proper org permissions to access Kerrigan
+- Check workflow permissions are set to "Read and write permissions"
 
 ### No files are synced
 - Check the paths in the workflow file match the actual location in the source repository
