@@ -34,30 +34,23 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Sparse checkout static files from Kerrigan
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-          mkdir -p source-repo
-          cd source-repo
-          git init
-          git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/Coalescent-Emergence/Kerrigan.git"
-          git config core.sparseCheckout true
-          cat > .git/info/sparse-checkout <<'EOF'
-          /docs/mvp-tracker.html
-          /docs/index.html
-          /docs/_config.yml
-          /MVP_STATUS.md
-          /docs/TRACKER_SETUP.md
-          /docs/README.md
-          /docs/mvp.md
-          /GITHUB_PAGES_SETUP.md
-          /README.md
-          EOF
-          # Fetch latest main by default (adjust ref as needed)
-          git fetch --depth=1 origin main
-          git checkout FETCH_HEAD
+      - name: Checkout Kerrigan (sparse)
+        uses: actions/checkout@v4
+        with:
+          repository: Coalescent-Emergence/Kerrigan
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: source-repo
+          fetch-depth: 1
+          sparse-checkout: |
+            docs/mvp-tracker.html
+            docs/index.html
+            docs/_config.yml
+            MVP_STATUS.md
+            docs/TRACKER_SETUP.md
+            docs/README.md
+            docs/mvp.md
+            GITHUB_PAGES_SETUP.md
+            README.md
 
       - name: Validate and copy static files
         run: |
