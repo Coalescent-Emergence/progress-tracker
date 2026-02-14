@@ -3,6 +3,11 @@ name: Deploy MVP Tracker to GitHub Pages
 on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'If true, list files only and do not commit (true|false)'
+        required: false
+        default: 'true'
 
   # Runs on a schedule (daily at midnight UTC)
   schedule:
@@ -39,6 +44,8 @@ jobs:
         with:
           repository: Coalescent-Emergence/Kerrigan
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: main
+          persist-credentials: false
           path: source-repo
           fetch-depth: 1
           sparse-checkout: |
