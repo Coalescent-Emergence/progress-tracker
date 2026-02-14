@@ -1,0 +1,113 @@
+name: Deploy MVP Tracker to GitHub Pages
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
+  # Runs on a schedule (daily at midnight UTC)
+  schedule:
+    - cron: '0 0 * * *'
+  
+  # Allows triggering from external repositories via repository_dispatch
+  repository_dispatch:
+    types: [deploy]
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Sync files from source repository
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Checkout source repository (Kerrigan)
+        uses: actions/checkout@v4
+        with:
+          repository: Coalescent-Emergence/Kerrigan
+          token: ${{ secrets.SOURCE_REPO_TOKEN }}
+          path: source-repo
+          
+      - name: Copy MVP tracker files
+        run: |
+          # Copy the MVP tracker files from the source repository
+          # Adjust these paths based on where the files are located in Kerrigan
+          
+          # Create necessary directories
+          mkdir -p docs
+          
+          # Copy HTML, CSS, JS, and other static files
+          # Common patterns for MVP tracker files:
+          if [ -d "source-repo/mvp-tracker" ]; then
+            cp -r source-repo/mvp-tracker/* docs/
+          elif [ -d "source-repo/docs/mvp-tracker" ]; then
+            cp -r source-repo/docs/mvp-tracker/* docs/
+          elif [ -d "source-repo/progress-tracker" ]; then
+            cp -r source-repo/progress-tracker/* docs/
+          elif [ -f "source-repo/mvp-tracker.html" ]; then
+            cp source-repo/mvp-tracker.html docs/index.html
+            # Copy any associated CSS/JS files
+            [ -f "source-repo/mvp-tracker.css" ] && cp source-repo/mvp-tracker.css docs/
+            [ -f "source-repo/mvp-tracker.js" ] && cp source-repo/mvp-tracker.js docs/
+          fi
+          
+          # If no MVP tracker found, create a placeholder
+          if [ ! -f "docs/index.html" ]; then
+            echo "Warning: No MVP tracker files found. Creating placeholder."
+            echo '<!DOCTYPE html><html><head><title>MVP Tracker</title></head><body><h1>MVP Tracker</h1><p>Awaiting content sync...</p></body></html>' > docs/index.html
+          fi
+          
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/
+          if git diff-index --quiet HEAD --; then
+            echo "No changes to commit"
+          else
+            git commit -m "Sync MVP tracker from source repository"
+            git push
+          fi
+
+  # Build and deploy to GitHub Pages
+  deploy:
+    needs: sync
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # Pull the latest commit from sync job
+          fetch-depth: 0
+      
+      - name: Pull latest changes
+        run: git pull origin ${{ github.ref_name }}
+          
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+        
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload docs directory
+          path: 'docs'
+          
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
