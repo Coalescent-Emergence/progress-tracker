@@ -13,7 +13,7 @@ This repository automatically syncs and deploys the MVP tracker from the source 
 ## How it Works
 
 This repository uses GitHub Actions to:
-1. Pull MVP tracker files from the source repository (Kerrigan)
+1. Pull MVP tracker files from the source repository (Kerrigan) using sparse checkout
 2. Deploy them to GitHub Pages automatically
 
-See [SETUP.md](SETUP.md) for detailed setup instructions.
+**Note**: Access to the private Kerrigan repository requires configuring a `KERRIGAN_ACCESS_TOKEN` secret. See [SETUP.md](SETUP.md) for detailed setup instructions.
