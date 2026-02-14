@@ -91,9 +91,19 @@ jobs:
               echo "Skipping file outside allowed paths: $rel"
               continue
             fi
-            echo "Copying $rel"
-            mkdir -p "$(dirname "docs/$rel")"
-            cp "$f" "docs/$rel"
+
+            # If the file lives under the source 'docs/' directory, strip that
+            # leading prefix so source 'docs/mvp-tracker.html' becomes
+            # 'docs/mvp-tracker.html' in the repo (which publishes to '/mvp-tracker.html').
+            if [[ "$rel" == docs/* ]]; then
+              dest="${rel#docs/}"
+            else
+              dest="$rel"
+            fi
+
+            echo "Copying $rel -> $dest"
+            mkdir -p "$(dirname "docs/$dest")"
+            cp "$f" "docs/$dest"
           done
 
           # If no index found, create a small placeholder
