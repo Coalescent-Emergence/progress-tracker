@@ -96,7 +96,13 @@ jobs:
           ref: ${{ github.ref }}
 
       - name: Pull latest commit from sync
-        run: git pull --ff-only origin ${{ github.ref_name }}
+        run: |
+          git fetch origin ${{ github.ref_name }}
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/${{ github.ref_name }})" ]; then
+            git pull --ff-only origin ${{ github.ref_name }}
+          else
+            echo "Already up to date with remote"
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
