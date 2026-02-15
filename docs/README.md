@@ -1,4 +1,8 @@
-# Kerrigan Documentation & MVP Tracker
+# Kerrigan Documentation
+
+> **Org-Wide Docs:** For organization-wide policies, architecture, and ADRs, see [Coalescent-Emergence/.github/docs](https://github.com/Coalescent-Emergence/.github/tree/main/docs).
+> 
+> **Canonical Source:** This directory is canonical for Kerrigan implementation details. Org-wide docs are canonical for cross-repo topics.
 
 This directory contains the Kerrigan project documentation and the MVP Progress Tracker.
 
