@@ -112,6 +112,17 @@ jobs:
             echo '<!DOCTYPE html><html><head><title>MVP Tracker</title></head><body><h1>MVP Tracker</h1><p>Awaiting content sync...</p></body></html>' > docs/index.html
           fi
 
+      - name: Generate issues JSON for tracker
+        env:
+          OWNER: Coalescent-Emergence
+          REPO: Kerrigan
+          TOKEN: ${{ secrets.KERRIGAN_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Ensure script is executable
+          chmod +x ./scripts/generate_issues_json.sh
+          ./scripts/generate_issues_json.sh
+
       - name: Commit and push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
