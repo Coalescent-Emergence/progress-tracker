@@ -332,9 +332,7 @@
     </div>
     
     <script>
-        const REPO_OWNER = 'Coalescent-Emergence';
-        const REPO_NAME = 'Kerrigan';
-        const API_URL = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/issues`;
+        const DATA_URL = 'data/issues.json';
         
         // MVP milestones based on 60-day timeline
         // Note: 'days' property is for reference only and not displayed in stakeholder view
@@ -356,9 +354,9 @@
         
         async function fetchIssues() {
             try {
-                const response = await fetch(`${API_URL}?state=all&per_page=100`);
+                const response = await fetch(DATA_URL);
                 if (!response.ok) {
-                    throw new Error(`GitHub API error: ${response.status}`);
+                    throw new Error(`Tracker data error: ${response.status}`);
                 }
                 return await response.json();
             } catch (error) {
