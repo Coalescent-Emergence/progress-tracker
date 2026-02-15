@@ -1,0 +1,172 @@
+[
+  {
+    "number": 1,
+    "title": "Investigate Microsoft Teams call transcription approaches",
+    "state": "closed",
+    "labels": [],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/1",
+    "updated_at": "2026-02-14T02:45:24Z"
+  },
+  {
+    "number": 4,
+    "title": "T1 — Capture Verification (capture shim)",
+    "state": "closed",
+    "labels": [
+      "type:feature",
+      "p1",
+      "status:triage",
+      "effort:S",
+      "area:backend",
+      "area:platform",
+      "ai:decompose"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/4",
+    "updated_at": "2026-02-14T00:54:45Z"
+  },
+  {
+    "number": 5,
+    "title": "T2 — Audio Pipeline Library",
+    "state": "open",
+    "labels": [
+      "type:feature",
+      "p0",
+      "status:triage",
+      "effort:M",
+      "area:backend",
+      "area:architecture",
+      "ai:decompose"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/5",
+    "updated_at": "2026-02-14T02:59:54Z"
+  },
+  {
+    "number": 6,
+    "title": "T3 — ASR Runtime Prototype (GPU + CPU fallback)",
+    "state": "open",
+    "labels": [
+      "type:infra",
+      "p0",
+      "status:triage",
+      "effort:L",
+      "area:backend",
+      "area:platform",
+      "ai:decompose"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/6",
+    "updated_at": "2026-02-14T00:23:01Z"
+  },
+  {
+    "number": 7,
+    "title": "T4 — Backend Upload & Job Orchestration",
+    "state": "open",
+    "labels": [
+      "type:feature",
+      "p0",
+      "status:triage",
+      "effort:L",
+      "area:backend",
+      "area:platform",
+      "ai:decompose"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/7",
+    "updated_at": "2026-02-14T00:23:03Z"
+  },
+  {
+    "number": 8,
+    "title": "T5 — Realtime Websocket & Incremental Updates",
+    "state": "open",
+    "labels": [
+      "type:feature",
+      "p2",
+      "status:triage",
+      "effort:M",
+      "area:backend",
+      "area:frontend",
+      "ai:decompose"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/8",
+    "updated_at": "2026-02-14T00:23:06Z"
+  },
+  {
+    "number": 9,
+    "title": "T6 — Diarization & Speaker Attribution",
+    "state": "open",
+    "labels": [
+      "type:feature",
+      "p2",
+      "status:triage",
+      "effort:L",
+      "area:backend",
+      "area:architecture",
+      "ai:decompose"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/9",
+    "updated_at": "2026-02-14T00:23:09Z"
+  },
+  {
+    "number": 10,
+    "title": "T7 — Compliance & Audit Instrumentation",
+    "state": "open",
+    "labels": [
+      "type:feature",
+      "p0",
+      "status:triage",
+      "effort:M",
+      "area:backend",
+      "ai:decompose",
+      "meta:compliance"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/10",
+    "updated_at": "2026-02-14T00:23:12Z"
+  },
+  {
+    "number": 11,
+    "title": "T8 — Test Harness & Benchmarks",
+    "state": "open",
+    "labels": [
+      "type:feature",
+      "p1",
+      "status:triage",
+      "effort:M",
+      "area:backend",
+      "area:platform",
+      "ai:decompose"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/11",
+    "updated_at": "2026-02-14T00:23:15Z"
+  },
+  {
+    "number": 12,
+    "title": "T9 — Deployment & Infra (MVP)",
+    "state": "open",
+    "labels": [
+      "type:infra",
+      "p1",
+      "status:triage",
+      "effort:S",
+      "area:platform",
+      "ai:decompose"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/12",
+    "updated_at": "2026-02-14T00:23:17Z"
+  },
+  {
+    "number": 14,
+    "title": "MVP status tracker and update",
+    "state": "closed",
+    "labels": [
+      "documentation",
+      "ai:generate"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/14",
+    "updated_at": "2026-02-14T02:58:37Z"
+  },
+  {
+    "number": 17,
+    "title": "✨ Set up Copilot instructions",
+    "state": "closed",
+    "labels": [],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/17",
+    "updated_at": "2026-02-14T02:56:17Z"
+  }
+]
