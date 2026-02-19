@@ -123,6 +123,47 @@ jobs:
           chmod +x ./scripts/generate_issues_json.sh
           ./scripts/generate_issues_json.sh
 
+      - name: Apply post-sync fixes to mvp-tracker.html
+        run: |
+          set -euo pipefail
+          TRACKER_FILE="docs/mvp-tracker.html"
+          
+          if [ ! -f "$TRACKER_FILE" ]; then
+            echo "Warning: $TRACKER_FILE not found, skipping post-sync fixes"
+            exit 0
+          fi
+          
+          # Check if normalizeLabels function exists
+          if grep -q "function normalizeLabels" "$TRACKER_FILE"; then
+            echo "✓ normalizeLabels function already exists"
+          else
+            echo "⚠ normalizeLabels function missing, applying fix..."
+            
+            # Find the categorizeIssue function and add normalizeLabels before it
+            if grep -q "function categorizeIssue" "$TRACKER_FILE"; then
+              # Create a temporary file with the fix
+              awk '
+                /function categorizeIssue/ && !done {
+                  print "        function normalizeLabels(issue) {"
+                  print "            return issue.labels.map(l => typeof l === '\''string'\'' ? l.toLowerCase() : l.name.toLowerCase());"
+                  print "        }"
+                  print "        "
+                  done = 1
+                }
+                { print }
+              ' "$TRACKER_FILE" > "$TRACKER_FILE.tmp"
+              mv "$TRACKER_FILE.tmp" "$TRACKER_FILE"
+              
+              # Replace all instances of direct label mapping with normalizeLabels
+              sed -i 's/issue\.labels\.map(l => l\.name\.toLowerCase())/normalizeLabels(issue)/g' "$TRACKER_FILE"
+              sed -i 's/const labels = issue\.labels\.map(l => l\.name\.toLowerCase());/const labels = normalizeLabels(issue);/g' "$TRACKER_FILE"
+              
+              echo "✓ Applied normalizeLabels fix"
+            else
+              echo "⚠ Could not find categorizeIssue function, manual fix may be needed"
+            fi
+          fi
+
       - name: Commit and push changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
