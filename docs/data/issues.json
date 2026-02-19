@@ -34,10 +34,11 @@
       "effort:M",
       "area:backend",
       "area:architecture",
-      "ai:decompose"
+      "ai:decompose",
+      "type:child"
     ],
     "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/5",
-    "updated_at": "2026-02-18T23:37:01Z"
+    "updated_at": "2026-02-19T02:36:18Z"
   },
   {
     "number": 6,
@@ -50,10 +51,11 @@
       "effort:L",
       "area:backend",
       "area:platform",
-      "ai:decompose"
+      "ai:decompose",
+      "type:child"
     ],
     "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/6",
-    "updated_at": "2026-02-18T23:37:03Z"
+    "updated_at": "2026-02-19T02:36:19Z"
   },
   {
     "number": 7,
@@ -66,10 +68,11 @@
       "effort:L",
       "area:backend",
       "area:platform",
-      "ai:decompose"
+      "ai:decompose",
+      "type:child"
     ],
     "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/7",
-    "updated_at": "2026-02-18T23:37:05Z"
+    "updated_at": "2026-02-19T02:36:21Z"
   },
   {
     "number": 8,
@@ -82,10 +85,11 @@
       "effort:M",
       "area:backend",
       "area:frontend",
-      "ai:decompose"
+      "ai:decompose",
+      "type:child"
     ],
     "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/8",
-    "updated_at": "2026-02-14T00:23:06Z"
+    "updated_at": "2026-02-19T02:36:22Z"
   },
   {
     "number": 9,
@@ -98,10 +102,11 @@
       "effort:L",
       "area:backend",
       "area:architecture",
-      "ai:decompose"
+      "ai:decompose",
+      "type:child"
     ],
     "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/9",
-    "updated_at": "2026-02-14T00:23:09Z"
+    "updated_at": "2026-02-19T02:36:24Z"
   },
   {
     "number": 10,
@@ -114,10 +119,11 @@
       "effort:M",
       "area:backend",
       "ai:decompose",
-      "meta:compliance"
+      "meta:compliance",
+      "type:child"
     ],
     "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/10",
-    "updated_at": "2026-02-14T00:23:12Z"
+    "updated_at": "2026-02-19T02:36:25Z"
   },
   {
     "number": 11,
@@ -130,10 +136,11 @@
       "effort:M",
       "area:backend",
       "area:platform",
-      "ai:decompose"
+      "ai:decompose",
+      "type:child"
     ],
     "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/11",
-    "updated_at": "2026-02-14T00:23:15Z"
+    "updated_at": "2026-02-19T02:36:27Z"
   },
   {
     "number": 12,
@@ -145,10 +152,11 @@
       "status:triage",
       "effort:S",
       "area:platform",
-      "ai:decompose"
+      "ai:decompose",
+      "type:child"
     ],
     "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/12",
-    "updated_at": "2026-02-14T00:23:17Z"
+    "updated_at": "2026-02-19T02:36:28Z"
   },
   {
     "number": 14,
