@@ -366,7 +366,7 @@
         }
         
         function categorizeIssue(issue) {
-            const labels = issue.labels.map(l => l.name.toLowerCase());
+            const labels = issue.labels.map(l => typeof l === 'string' ? l.toLowerCase() : l.name.toLowerCase());
             const title = issue.title.toLowerCase();
             
             // Determine phase based on task number and content
@@ -395,7 +395,7 @@
         }
         
         function getPriority(issue) {
-            const labels = issue.labels.map(l => l.name.toLowerCase());
+            const labels = issue.labels.map(l => typeof l === 'string' ? l.toLowerCase() : l.name.toLowerCase());
             if (labels.includes('p0')) return 'p0';
             if (labels.includes('p1')) return 'p1';
             if (labels.includes('p2')) return 'p2';
@@ -403,7 +403,7 @@
         }
         
         function getEffort(issue) {
-            const labels = issue.labels.map(l => l.name.toLowerCase());
+            const labels = issue.labels.map(l => typeof l === 'string' ? l.toLowerCase() : l.name.toLowerCase());
             if (labels.some(l => l.includes('effort:s'))) return 's';
             if (labels.some(l => l.includes('effort:m'))) return 'm';
             if (labels.some(l => l.includes('effort:l'))) return 'l';
@@ -559,7 +559,7 @@
                 // Filter out the tracker issue itself (#14) and other meta issues
                 const mvpIssues = issues.filter(issue => {
                     const title = issue.title.toLowerCase();
-                    const labels = issue.labels.map(l => l.name.toLowerCase());
+                    const labels = issue.labels.map(l => typeof l === 'string' ? l.toLowerCase() : l.name.toLowerCase());
                     
                     // Exclude the tracker issue and investigate issues
                     if (issue.number === 14) return false;
