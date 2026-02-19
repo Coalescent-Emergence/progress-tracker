@@ -142,20 +142,17 @@ jobs:
             # Find the categorizeIssue function and add normalizeLabels before it
             if grep -q "function categorizeIssue" "$TRACKER_FILE"; then
               # Create a temporary file with the fix
-              awk '
-                /function categorizeIssue/ && !done {
-                  print "        function normalizeLabels(issue) {"
-                  print "            return issue.labels.map(l => typeof l === '\''string'\'' ? l.toLowerCase() : l.name.toLowerCase());"
-                  print "        }"
-                  print "        "
+              awk "/function categorizeIssue/ && !done {
+                  print \"        function normalizeLabels(issue) {\"
+                  print \"            return issue.labels.map(l => typeof l === 'string' ? l.toLowerCase() : l.name.toLowerCase());\"
+                  print \"        }\"
+                  print \"        \"
                   done = 1
                 }
-                { print }
-              ' "$TRACKER_FILE" > "$TRACKER_FILE.tmp"
+                { print }" "$TRACKER_FILE" > "$TRACKER_FILE.tmp"
               mv "$TRACKER_FILE.tmp" "$TRACKER_FILE"
               
               # Replace all instances of direct label mapping with normalizeLabels
-              sed -i 's/issue\.labels\.map(l => l\.name\.toLowerCase())/normalizeLabels(issue)/g' "$TRACKER_FILE"
               sed -i 's/const labels = issue\.labels\.map(l => l\.name\.toLowerCase());/const labels = normalizeLabels(issue);/g' "$TRACKER_FILE"
               
               echo "✓ Applied normalizeLabels fix"
