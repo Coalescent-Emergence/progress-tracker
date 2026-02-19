@@ -30,7 +30,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Sync files from source repository
+  # Build artifacts and deploy to GitHub Pages
   sync:
     runs-on: ubuntu-latest
     steps:
@@ -38,79 +38,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout Kerrigan (sparse)
-        uses: actions/checkout@v4
-        with:
-          repository: Coalescent-Emergence/Kerrigan
-          token: ${{ secrets.KERRIGAN_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
-          ref: main
-          persist-credentials: false
-          path: source-repo
-          fetch-depth: 1
-          sparse-checkout: |
-            docs/mvp-tracker.html
-            docs/index.html
-            docs/_config.yml
-            MVP_STATUS.md
-            docs/TRACKER_SETUP.md
-            docs/README.md
-            docs/mvp.md
-            GITHUB_PAGES_SETUP.md
-            README.md
-
-      - name: Validate and copy static files
-        run: |
-          set -euo pipefail
-          SRC=source-repo
-          mkdir -p docs
-          # Allowed top-level path patterns and extensions
-          ALLOWED_PATHS=("docs/" "MVP_STATUS.md" "GITHUB_PAGES_SETUP.md" "README.md")
-          ALLOWED_EXTS="html css js svg png jpg jpeg webp woff2 ico json md"
-
-          is_allowed_path() {
-            local rel="$1"
-            for p in "${ALLOWED_PATHS[@]}"; do
-              case "$rel" in
-                "$p"* ) return 0 ;;
-              esac
-            done
-            return 1
-          }
-
-          for f in $(find "$SRC" -type f); do
-            rel="${f#$SRC/}"
-            ext="${f##*.}"
-            # normalize extension to lower
-            ext="$(echo "$ext" | tr '[:upper:]' '[:lower:]')"
-            case " $ALLOWED_EXTS " in
-              *" $ext "*) ;;
-              *) echo "Skipping disallowed extension: $rel"; continue ;;
-            esac
-            if ! is_allowed_path "$rel"; then
-              echo "Skipping file outside allowed paths: $rel"
-              continue
-            fi
-
-            # If the file lives under the source 'docs/' directory, strip that
-            # leading prefix so source 'docs/mvp-tracker.html' becomes
-            # 'docs/mvp-tracker.html' in the repo (which publishes to '/mvp-tracker.html').
-            if [[ "$rel" == docs/* ]]; then
-              dest="${rel#docs/}"
-            else
-              dest="$rel"
-            fi
-
-            echo "Copying $rel -> $dest"
-            mkdir -p "$(dirname "docs/$dest")"
-            cp "$f" "docs/$dest"
-          done
-
-          # If no index found, create a small placeholder
-          if [ ! -f "docs/index.html" ] && [ ! -f "docs/mvp-tracker.html" ]; then
-            echo "Warning: No MVP tracker files found. Creating placeholder."
-            echo '<!DOCTYPE html><html><head><title>MVP Tracker</title></head><body><h1>MVP Tracker</h1><p>Awaiting content sync...</p></body></html>' > docs/index.html
-          fi
 
       - name: Generate issues JSON for tracker
         env:
