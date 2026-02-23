@@ -1,6 +1,8 @@
-# Kerrigan Roadmap
+# Kerrigan Roadmap (Archived copy)
 
 **Consolidated (detailed-first)**
+
+> **Note:** The canonical roadmap is maintained in the `mvp-control-plane` repository under `docs/implementation/pieces/kerrigan/roadmap.md`.
 
 Last Updated: February 12, 2026
 
