@@ -4,6 +4,7 @@ MVP progress tracker - Deployed to GitHub Pages
 
 This repository automatically syncs and deploys the MVP tracker from the source repository to GitHub Pages.
 
+> **Note:** The official roadmap and MVP status documents are now maintained in the [mvp-control-plane](../mvp-control-plane) repo; the files here are archived copies.
 ## Quick Links
 
 - 🌐 **Live Site**: https://coalescent-emergence.github.io/progress-tracker/
