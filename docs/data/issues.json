@@ -176,5 +176,15 @@
     "labels": [],
     "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/17",
     "updated_at": "2026-02-14T02:56:17Z"
+  },
+  {
+    "number": 22,
+    "title": "Modular audio capture adapter (Zoom)",
+    "state": "open",
+    "labels": [
+      "type:feature"
+    ],
+    "html_url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/22",
+    "updated_at": "2026-02-23T21:57:45Z"
   }
 ]
