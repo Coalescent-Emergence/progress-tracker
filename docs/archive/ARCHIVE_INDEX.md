@@ -7,6 +7,7 @@ This directory contains documents retained for historical reference after canoni
 ## Files
 
 - `roadmap.md` — original roadmap; canonical version moved to `mvp-control-plane`.
+- `roadmap_basic.md` — additional older roadmap duplicate.
 - `MVP_STATUS.md` — original status page; canonical version moved to `mvp-control-plane`.
 
 ## Notes
