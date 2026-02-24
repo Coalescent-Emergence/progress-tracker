@@ -47,7 +47,7 @@ jobs:
         env:
           ORG:               Coalescent-Emergence
           REPO:              Kerrigan
-          TOKEN:             ${{ secrets.TRACKER_DATA_TOKEN || secrets.GITHUB_TOKEN }}
+          TOKEN:             ${{ secrets.KERRIGAN_ACCESS_TOKEN || secrets.TRACKER_DATA_TOKEN || secrets.GITHUB_TOKEN }}
           # Set GH_PROJECT_NUMBER to your org Projects v2 number to enable rich project data.
           # If unset, the generator falls back to Issues API (milestones → title-prefix grouping).
           GH_PROJECT_NUMBER: ${{ vars.GH_PROJECT_NUMBER }}
