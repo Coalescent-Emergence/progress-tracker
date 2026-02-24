@@ -95,21 +95,22 @@ jobs:
           # insert normalizeLabels helper if absent
           if ! grep -q "function normalizeLabels" docs/mvp-tracker.html; then
             echo "[fix] adding normalizeLabels() helper"
-            # insert after fetchIssues function closing brace using properly
-            # quoted AWK script to avoid shell parsing errors.
-            awk '
-/async function fetchIssues\(\)/{print;flag=1;next}
-flag && /}\s*$/{
-    print "        "
-    print "        function normalizeLabels(issue) {"
-    print "            return issue.labels"
-    print "                .map(l => typeof l === '\''string'\'' ? l : (l && l.name))"
-    print "                .filter(l => l && typeof l === '\''string'\'')"
-    print "                .map(l => l.toLowerCase());"
-    print "        }"
-    flag=0
-}
-{print}' docs/mvp-tracker.html > docs/mvp-tracker.tmp && mv docs/mvp-tracker.tmp docs/mvp-tracker.html
+            # use ed to insert a block after fetchIssues pattern; ed handles
+            # multi-line text gracefully without fiddly quoting.
+            ed -s docs/mvp-tracker.html <<'ED'
+/async function fetchIssues()/
++1
+a
+        function normalizeLabels(issue) {
+            return issue.labels
+                .map(l => typeof l === 'string' ? l : (l && l.name))
+                .filter(l => l && typeof l === 'string')
+                .map(l => l.toLowerCase());
+        }
+.
+w
+q
+ED
           else
             echo "[ok] normalizeLabels helper already present"
           fi
