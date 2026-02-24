@@ -1,12 +1,9 @@
-# GitHub Pages Setup Summary
+# GitHub Pages Runbook (moved)
 
-## What Was Added (Commit 2206f2b)
+The canonical GitHub Pages deployment and setup guide is maintained in the **progress-tracker** repository, since that repo operates the dashboard site.
 
-### 1. GitHub Actions Workflow
-**File**: `.github/workflows/deploy-pages.yml`
+See: https://github.com/Coalescent-Emergence/mvp/progress-tracker/docs/GITHUB_PAGES_SETUP.md
 
-This workflow automatically deploys the tracker to GitHub Pages:
-- **Triggers**: When code is pushed to `main` branch and files in `/docs` change
 - **Also**: Can be manually triggered via workflow_dispatch
 - **Permissions**: Configured for GitHub Pages deployment
 - **Process**: 

@@ -285,6 +285,30 @@ Retrieve transcription result.
 
 ---
 
+### Realtime Streaming
+
+#### WS /ws
+
+Upgrade an authenticated connection to receive live transcript updates.  Clients must
+include the access token as `?token=<jwt>` query parameter or via `Sec-WebSocket-Protocol`
+header (TODO: choose one).  Messages are JSON objects with the following schema:
+
+```json
+{
+  "type": "partial" | "final",
+  "text": "...",
+  "timestamp": 1630000000000000000
+}
+```
+
+`partial` messages may be followed by a `final` message referencing the same
+chunk; the client should replace the earlier text.  Heartbeats are sent as
+`{"type":"ping"}` periodically and should be dropped by the application.
+
+**Errors**: sent as JSON with `error` field, then connection closed.
+
+---
+
 ### Health & Status
 
 #### GET /health
