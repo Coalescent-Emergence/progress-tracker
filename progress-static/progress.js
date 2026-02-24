@@ -1,65 +1,15 @@
 // progress.js
-// Fetches and displays MVP progress from GitHub ProjectV2 issues
-
-const OWNER = 'Coalescent-Emergence';
-const REPO = 'mvp-control-plane';
-const PROJECT_NUMBER = 1; // Adjust if not Project #1
+// Loads and displays MVP progress from static progress.json
 
 async function fetchProjectV2Issues() {
-  // GitHub GraphQL API endpoint
-  const endpoint = 'https://api.github.com/graphql';
-  // You must provide a GitHub token with read access to the repo as GITHUB_TOKEN in localStorage
-  const token = localStorage.getItem('GITHUB_TOKEN');
-  if (!token) {
-    document.getElementById('progress-summary').textContent = 'GitHub token not found. Please set GITHUB_TOKEN in localStorage.';
+  try {
+    const res = await fetch('progress.json');
+    if (!res.ok) throw new Error('progress.json not found');
+    return await res.json();
+  } catch (e) {
+    document.getElementById('progress-summary').textContent = 'Progress data not available.';
     return null;
   }
-
-  // GraphQL query for ProjectV2 items
-  const query = `
-    query($owner: String!, $repo: String!, $projectNumber: Int!, $first: Int!) {
-      repository(owner: $owner, name: $repo) {
-        projectV2(number: $projectNumber) {
-          items(first: $first) {
-            nodes {
-              content {
-                ... on Issue {
-                  number
-                  title
-                  url
-                  state
-                  labels(first: 10) { nodes { name } }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  `;
-
-  const variables = {
-    owner: OWNER,
-    repo: REPO,
-    projectNumber: PROJECT_NUMBER,
-    first: 100
-  };
-
-  const res = await fetch(endpoint, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    },
-    body: JSON.stringify({ query, variables })
-  });
-
-  if (!res.ok) {
-    document.getElementById('progress-summary').textContent = 'Failed to fetch project data.';
-    return null;
-  }
-  const data = await res.json();
-  return data?.data?.repository?.projectV2?.items?.nodes || [];
 }
 
 function summarizeProgress(issues) {
