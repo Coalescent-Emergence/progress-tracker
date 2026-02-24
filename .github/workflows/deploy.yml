@@ -1,115 +1,171 @@
 name: Deploy MVP Tracker to GitHub Pages
 
 on:
-  # Manual trigger
+  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'If true, list files only and do not commit (true|false)'
+        required: false
+        default: 'true'
 
-  # Daily at 06:00 UTC (resilience / catch any missed dispatches)
+  # Runs on a schedule (daily at midnight UTC)
   schedule:
-    - cron: '0 6 * * *'
+    - cron: '0 0 * * *'
 
-  # Triggered by repository_dispatch from any repo that has the trigger workflow installed
-  # Supported event types: progress-update-request, deploy
+  # Allows triggering from external repositories via repository_dispatch
   repository_dispatch:
-    types: [progress-update-request, deploy]
+    types: [deploy]
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
-  contents: write   # commit generated data
+  contents: write  # Allow sync job to commit and push changes
   pages: write
   id-token: write
 
+# Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
+# However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # ──────────────────────────────────────────────────────────────────────────
-  # Job 1: Generate data and deploy
-  # ──────────────────────────────────────────────────────────────────────────
+  # Sync files from source repository
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout this repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Checkout Kerrigan (sparse)
+        uses: actions/checkout@v4
+        with:
+          repository: Coalescent-Emergence/Kerrigan
+          token: ${{ secrets.KERRIGAN_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+          ref: main
+          persist-credentials: false
+          path: source-repo
+          fetch-depth: 1
+          sparse-checkout: |
+            docs/mvp-tracker.html
+            docs/index.html
+            docs/_config.yml
+            MVP_STATUS.md
+            docs/TRACKER_SETUP.md
+            docs/README.md
+            docs/mvp.md
+            GITHUB_PAGES_SETUP.md
+            README.md
+
+      - name: Validate and copy static files
+        run: |
+          set -euo pipefail
+          SRC=source-repo
+          mkdir -p docs
+          # Allowed top-level path patterns and extensions
+          ALLOWED_PATHS=("docs/" "MVP_STATUS.md" "GITHUB_PAGES_SETUP.md" "README.md")
+          ALLOWED_EXTS="html css js svg png jpg jpeg webp woff2 ico json md"
+
+          is_allowed_path() {
+            local rel="$1"
+            for p in "${ALLOWED_PATHS[@]}"; do
+              case "$rel" in
+                "$p"* ) return 0 ;;
+              esac
+            done
+            return 1
+          }
+
+          for f in $(find "$SRC" -type f); do
+            rel="${f#$SRC/}"
+            ext="${f##*.}"
+            # normalize extension to lower
+            ext="$(echo "$ext" | tr '[:upper:]' '[:lower:]')"
+            case " $ALLOWED_EXTS " in
+              *" $ext "*) ;;
+              *) echo "Skipping disallowed extension: $rel"; continue ;;
+            esac
+            if ! is_allowed_path "$rel"; then
+              echo "Skipping file outside allowed paths: $rel"
+              continue
+            fi
+
+            # If the file lives under the source 'docs/' directory, strip that
+            # leading prefix so source 'docs/mvp-tracker.html' becomes
+            # 'docs/mvp-tracker.html' in the repo (which publishes to '/mvp-tracker.html').
+            if [[ "$rel" == docs/* ]]; then
+              dest="${rel#docs/}"
+            else
+              dest="$rel"
+            fi
+
+            echo "Copying $rel -> $dest"
+            mkdir -p "$(dirname "docs/$dest")"
+            cp "$f" "docs/$dest"
+          done
+
+          # If no index found, create a small placeholder
+          if [ ! -f "docs/index.html" ] && [ ! -f "docs/mvp-tracker.html" ]; then
+            echo "Warning: No MVP tracker files found. Creating placeholder."
+            echo '<!DOCTYPE html><html><head><title>MVP Tracker</title></head><body><h1>MVP Tracker</h1><p>Awaiting content sync...</p></body></html>' > docs/index.html
+          fi
+
+      - name: Generate issues JSON for tracker
+        env:
+          OWNER: Coalescent-Emergence
+          REPO: Kerrigan
+          TOKEN: ${{ secrets.KERRIGAN_ACCESS_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          # Ensure script is executable
+          chmod +x ./scripts/generate_issues_json.sh
+          ./scripts/generate_issues_json.sh
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Sync MVP tracker from source repository"
+            git push
+          fi
+
+  # Build and deploy to GitHub Pages
   deploy:
+    needs: sync
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout tracker repository
+      - name: Checkout latest changes
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref }}
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      # ── Generate progress data via GitHub API ──────────────────────────────
-      - name: Generate MVP progress data
-        env:
-          ORG:               Coalescent-Emergence
-          REPO:              Kerrigan
-          TOKEN:             ${{ secrets.TRACKER_DATA_TOKEN || secrets.GITHUB_TOKEN }}
-          # Set GH_PROJECT_NUMBER to your org Projects v2 number to enable rich project data.
-          # If unset, the generator falls back to Issues API (milestones → title-prefix grouping).
-          GH_PROJECT_NUMBER: ${{ vars.GH_PROJECT_NUMBER }}
-          OUTDIR:            docs/data
+      - name: Pull latest commit from sync
         run: |
-          set -euo pipefail
-          mkdir -p docs/data
-          python3 scripts/generate_mvp_data.py
-
-      # ── Validate generated JSON ────────────────────────────────────────────
-      - name: Validate generated data
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json, sys
-          with open("docs/data/mvp-data.json") as f:
-              d = json.load(f)
-          assert isinstance(d, dict),                               "root must be an object"
-          assert "generated_at" in d,                               "missing generated_at"
-          assert "overall"      in d,                               "missing overall"
-          assert "initiatives"  in d,                               "missing initiatives"
-          assert isinstance(d["initiatives"], list),                "initiatives must be array"
-          o = d["overall"]
-          assert isinstance(o.get("percent_complete"), int),        "percent_complete must be int"
-          assert 0 <= o["percent_complete"] <= 100,                 "percent out of range"
-          for init in d["initiatives"]:
-              assert "title"   in init, f"initiative missing title: {init}"
-              assert "percent" in init, f"initiative missing percent: {init}"
-          print(f"[ok] Validation passed — {len(d['initiatives'])} initiatives, {o['percent_complete']}% complete")
-          PY
-
-      # ── Ensure mvp-tracker.html is present ────────────────────────────────
-      - name: Ensure dashboard HTML is present
-        run: |
-          if [ ! -f docs/mvp-tracker.html ]; then
-            echo "ERROR: docs/mvp-tracker.html not found in repository"
-            exit 1
-          fi
-          echo "[ok] docs/mvp-tracker.html present"
-
-      # ── Commit data if changed ─────────────────────────────────────────────
-      - name: Commit and push updated data
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name  "github-actions[bot]"
-          git add docs/data/mvp-data.json
-          if git diff --cached --quiet; then
-            echo "No data changes to commit"
+          git fetch origin ${{ github.ref_name }}
+          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/${{ github.ref_name }})" ]; then
+            git pull --ff-only origin ${{ github.ref_name }}
           else
-            git commit -m "chore: update MVP progress data [skip ci]"
-            git push
+            echo "Already up to date with remote"
           fi
 
-      - name: Setup GitHub Pages
+      - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload Pages artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          # Upload docs directory
           path: 'docs'
 
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-

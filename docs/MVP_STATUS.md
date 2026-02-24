@@ -1,4 +1,6 @@
-# Kerrigan MVP Status
+# Kerrigan MVP Status (Archived copy)
+
+> **Note:** For the canonical MVP status content see `mvp-control-plane/docs/implementation/pieces/kerrigan/MVP_STATUS.md`.
 
 **Last Updated**: Auto-generated from GitHub Issues
 
