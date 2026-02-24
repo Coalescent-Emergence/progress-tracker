@@ -113,24 +113,3 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v4
 
-      - name: Pull latest commit from sync
-        run: |
-          git fetch origin ${{ github.ref_name }}
-          if [ "$(git rev-parse HEAD)" != "$(git rev-parse origin/${{ github.ref_name }})" ]; then
-            git pull --ff-only origin ${{ github.ref_name }}
-          else
-            echo "Already up to date with remote"
-          fi
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload docs directory
-          path: 'docs'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
