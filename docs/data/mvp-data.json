@@ -1,130 +1,103 @@
 {
-  "generated_at": "2026-02-18T00:00:00Z",
-  "source": "github-issues-title-prefix",
+  "generated_at": "2026-02-24T18:01:35Z",
+  "source": "github-issues-milestones",
   "repo": "Coalescent-Emergence/Kerrigan",
   "project_title": "",
   "overall": {
-    "total_initiatives": 9,
-    "total_items": 9,
-    "closed_items": 2,
-    "percent_complete": 22
+    "total_initiatives": 3,
+    "total_items": 13,
+    "closed_items": 4,
+    "percent_complete": 31
   },
   "initiatives": [
     {
-      "number": 4,
-      "title": "T1 \u2014 Capture Verification (capture shim)",
-      "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/4",
-      "status": "completed",
-      "labels": [{"name": "type:feature"}, {"name": "p1"}, {"name": "effort:S"}],
-      "total": 1,
+      "number": 1,
+      "title": "Prototype",
+      "url": "https://github.com/Coalescent-Emergence/Kerrigan/milestone/1",
+      "status": "in_progress",
+      "labels": [],
+      "total": 2,
       "closed": 1,
-      "percent": 100,
+      "percent": 50,
       "children": [
-        {"number": 4, "title": "T1 \u2014 Capture Verification (capture shim)", "state": "closed", "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/4"}
+        {
+          "number": 4,
+          "title": "T1 — Capture Verification (capture shim)",
+          "state": "closed",
+          "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/4"
+        },
+        {
+          "number": 6,
+          "title": "T3 — ASR Runtime Prototype (GPU + CPU fallback)",
+          "state": "open",
+          "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/6"
+        }
       ]
     },
     {
-      "number": 5,
-      "title": "T2 \u2014 Audio Pipeline Library",
-      "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/5",
+      "number": 2,
+      "title": "MVP",
+      "url": "https://github.com/Coalescent-Emergence/Kerrigan/milestone/2",
       "status": "not_started",
-      "labels": [{"name": "type:feature"}, {"name": "p0"}, {"name": "effort:M"}],
-      "total": 1,
+      "labels": [],
+      "total": 5,
       "closed": 0,
       "percent": 0,
       "children": [
-        {"number": 5, "title": "T2 \u2014 Audio Pipeline Library", "state": "open", "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/5"}
+        {
+          "number": 5,
+          "title": "T2 — Audio Pipeline Library",
+          "state": "open",
+          "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/5"
+        },
+        {
+          "number": 7,
+          "title": "T4 — Backend Upload & Job Orchestration",
+          "state": "open",
+          "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/7"
+        },
+        {
+          "number": 10,
+          "title": "T7 — Compliance & Audit Instrumentation",
+          "state": "open",
+          "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/10"
+        },
+        {
+          "number": 11,
+          "title": "T8 — Test Harness & Benchmarks",
+          "state": "open",
+          "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/11"
+        },
+        {
+          "number": 12,
+          "title": "T9 — Deployment & Infra (MVP)",
+          "state": "open",
+          "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/12"
+        }
       ]
     },
     {
-      "number": 6,
-      "title": "T3 \u2014 ASR Runtime Prototype (GPU + CPU fallback)",
-      "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/6",
+      "number": 3,
+      "title": "Post-MVP",
+      "url": "https://github.com/Coalescent-Emergence/Kerrigan/milestone/3",
       "status": "not_started",
-      "labels": [{"name": "type:infra"}, {"name": "p0"}, {"name": "effort:L"}],
-      "total": 1,
+      "labels": [],
+      "total": 2,
       "closed": 0,
       "percent": 0,
       "children": [
-        {"number": 6, "title": "T3 \u2014 ASR Runtime Prototype (GPU + CPU fallback)", "state": "open", "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/6"}
-      ]
-    },
-    {
-      "number": 7,
-      "title": "T4 \u2014 Backend Upload & Job Orchestration",
-      "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/7",
-      "status": "completed",
-      "labels": [{"name": "type:feature"}, {"name": "p0"}, {"name": "effort:L"}],
-      "total": 1,
-      "closed": 1,
-      "percent": 100,
-      "children": [
-        {"number": 7, "title": "T4 \u2014 Backend Upload & Job Orchestration", "state": "open", "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/7"}
-      ]
-    },
-    {
-      "number": 8,
-      "title": "T5 \u2014 Realtime Websocket & Incremental Updates",
-      "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/8",
-      "status": "not_started",
-      "labels": [{"name": "type:feature"}, {"name": "p2"}, {"name": "effort:M"}],
-      "total": 1,
-      "closed": 0,
-      "percent": 0,
-      "children": [
-        {"number": 8, "title": "T5 \u2014 Realtime Websocket & Incremental Updates", "state": "open", "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/8"}
-      ]
-    },
-    {
-      "number": 9,
-      "title": "T6 \u2014 Diarization & Speaker Attribution",
-      "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/9",
-      "status": "not_started",
-      "labels": [{"name": "type:feature"}, {"name": "p2"}, {"name": "effort:L"}],
-      "total": 1,
-      "closed": 0,
-      "percent": 0,
-      "children": [
-        {"number": 9, "title": "T6 \u2014 Diarization & Speaker Attribution", "state": "open", "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/9"}
-      ]
-    },
-    {
-      "number": 10,
-      "title": "T7 \u2014 Compliance & Audit Instrumentation",
-      "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/10",
-      "status": "not_started",
-      "labels": [{"name": "type:feature"}, {"name": "p0"}, {"name": "effort:M"}, {"name": "meta:compliance"}],
-      "total": 1,
-      "closed": 0,
-      "percent": 0,
-      "children": [
-        {"number": 10, "title": "T7 \u2014 Compliance & Audit Instrumentation", "state": "open", "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/10"}
-      ]
-    },
-    {
-      "number": 11,
-      "title": "T8 \u2014 Test Harness & Benchmarks",
-      "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/11",
-      "status": "not_started",
-      "labels": [{"name": "type:feature"}, {"name": "p1"}, {"name": "effort:M"}],
-      "total": 1,
-      "closed": 0,
-      "percent": 0,
-      "children": [
-        {"number": 11, "title": "T8 \u2014 Test Harness & Benchmarks", "state": "open", "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/11"}
-      ]
-    },
-    {
-      "number": 12,
-      "title": "T9 \u2014 Deployment & Infra (MVP)",
-      "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/12",
-      "status": "not_started",
-      "labels": [{"name": "type:infra"}, {"name": "p1"}, {"name": "effort:S"}],
-      "total": 1,
-      "closed": 0,
-      "percent": 0,
-      "children": [
-        {"number": 12, "title": "T9 \u2014 Deployment & Infra (MVP)", "state": "open", "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/12"}
+        {
+          "number": 8,
+          "title": "T5 — Realtime Websocket & Incremental Updates",
+          "state": "open",
+          "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/8"
+        },
+        {
+          "number": 9,
+          "title": "T6 — Diarization & Speaker Attribution",
+          "state": "open",
+          "url": "https://github.com/Coalescent-Emergence/Kerrigan/issues/9"
+        }
       ]
     }
   ]
