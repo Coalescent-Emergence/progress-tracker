@@ -365,6 +365,16 @@
             }
         }
         
+        // helper introduced in DEPLOYMENT_FIX.md to normalize labels
+        // mirrors the version in docs/docs/mvp-tracker.html so that the
+        // page served by GitHub Pages has the necessary function defined.
+        function normalizeLabels(issue) {
+            return issue.labels
+                .map(l => typeof l === 'string' ? l : (l && l.name))
+                .filter(l => l && typeof l === 'string')
+                .map(l => l.toLowerCase());
+        }
+        
         function categorizeIssue(issue) {
             const labels = normalizeLabels(issue);
             const title = issue.title.toLowerCase();

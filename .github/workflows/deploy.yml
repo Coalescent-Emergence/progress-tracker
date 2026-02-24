@@ -87,6 +87,28 @@ jobs:
             exit 1
           fi
           echo "[ok] docs/mvp-tracker.html present"
+      
+      # ── Post-sync adjustments (in case Kerrigan copy overwrote the helper) ──
+      - name: Apply post-sync fixes to HTML
+        run: |
+          set -euo pipefail
+          # insert normalizeLabels helper if absent
+          if ! grep -q "function normalizeLabels" docs/mvp-tracker.html; then
+            echo "[fix] adding normalizeLabels() helper"
+            # insert after fetchIssues function closing brace
+            awk '/async function fetchIssues\(\)/{print;flag=1;next} flag && /}\s*$/{
+                print "        \n        function normalizeLabels(issue) {";
+                print "            return issue.labels";
+                print "                .map(l => typeof l === \'string\' ? l : (l && l.name))";
+                print "                .filter(l => l && typeof l === 'string')";
+                print "                .map(l => l.toLowerCase());";
+                print "        }";
+                flag=0
+            }
+            {print}' docs/mvp-tracker.html > docs/mvp-tracker.tmp && mv docs/mvp-tracker.tmp docs/mvp-tracker.html
+          else
+            echo "[ok] normalizeLabels helper already present"
+          fi
 
       # ── Commit data if changed ─────────────────────────────────────────────
       - name: Commit and push updated data
