@@ -8,6 +8,11 @@ This repository automatically syncs and deploys the MVP tracker from the source 
 ## Quick Links
 
 - 🌐 **Live Site**: https://coalescent-emergence.github.io/progress-tracker/
+
+## Active Initiatives
+
+- **KERRIGAN-MVP-INGEST-TRANSCRIBE** – audio ingestion/transcription service.  
+  Backend upload & job orchestration implemented (T4); branch `feature/8-backend-upload` pending review.  Next: realtime websocket (T5).
 - 📋 **Setup Guide**: See [SETUP.md](SETUP.md) for configuration instructions
 - 🔄 **Workflow Status**: Check the [Actions tab](../../actions) for deployment status
 
