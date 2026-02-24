@@ -1,142 +1,30 @@
-name: Deploy MVP Tracker to GitHub Pages
+name: Deploy Progress Tracker
 
 on:
-  # Manual trigger
-  workflow_dispatch:
-
-  # Daily at 06:00 UTC (resilience / catch any missed dispatches)
-  schedule:
-    - cron: '0 6 * * *'
-
-  # Triggered by repository_dispatch from any repo that has the trigger workflow installed
-  # Supported event types: progress-update-request, deploy
-  repository_dispatch:
-    types: [progress-update-request, deploy]
+	push:
+		branches: [main]
+	workflow_dispatch:
 
 permissions:
-  contents: write   # commit generated data
-  pages: write
-  id-token: write
-
-concurrency:
-  group: "pages"
-  cancel-in-progress: false
+	contents: read
+	pages: write
+	id-token: write
 
 jobs:
-  # ──────────────────────────────────────────────────────────────────────────
-  # Job 1: Generate data and deploy
-  # ──────────────────────────────────────────────────────────────────────────
-  deploy:
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Checkout tracker repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+	deploy:
+		runs-on: ubuntu-latest
+		steps:
+			- name: Checkout repository
+				uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+			- name: Setup Pages
+				uses: actions/configure-pages@v5
 
-      # ── Generate progress data via GitHub API ──────────────────────────────
-      - name: Generate MVP progress data
-        env:
-          ORG:               Coalescent-Emergence
-          REPO:              Kerrigan
-          TOKEN:             ${{ secrets.KERRIGAN_ACCESS_TOKEN || secrets.TRACKER_DATA_TOKEN || secrets.GITHUB_TOKEN }}
-          # Set GH_PROJECT_NUMBER to your org Projects v2 number to enable rich project data.
-          # If unset, the generator falls back to Issues API (milestones → title-prefix grouping).
-          GH_PROJECT_NUMBER: ${{ vars.GH_PROJECT_NUMBER }}
-          OUTDIR:            docs/data
-        run: |
-          set -euo pipefail
-          mkdir -p docs/data
-          python3 scripts/generate_mvp_data.py
+			- name: Upload static site
+				uses: actions/upload-pages-artifact@v3
+				with:
+					path: ./progress-static
 
-      # ── Validate generated JSON ────────────────────────────────────────────
-      - name: Validate generated data
-        run: |
-          set -euo pipefail
-          python3 - <<'PY'
-          import json, sys
-          with open("docs/data/mvp-data.json") as f:
-              d = json.load(f)
-          assert isinstance(d, dict),                               "root must be an object"
-          assert "generated_at" in d,                               "missing generated_at"
-          assert "overall"      in d,                               "missing overall"
-          assert "initiatives"  in d,                               "missing initiatives"
-          assert isinstance(d["initiatives"], list),                "initiatives must be array"
-          o = d["overall"]
-          assert isinstance(o.get("percent_complete"), int),        "percent_complete must be int"
-          assert 0 <= o["percent_complete"] <= 100,                 "percent out of range"
-          for init in d["initiatives"]:
-              assert "title"   in init, f"initiative missing title: {init}"
-              assert "percent" in init, f"initiative missing percent: {init}"
-          print(f"[ok] Validation passed — {len(d['initiatives'])} initiatives, {o['percent_complete']}% complete")
-          PY
-
-      # ── Ensure mvp-tracker.html is present ────────────────────────────────
-      - name: Ensure dashboard HTML is present
-        run: |
-          if [ ! -f docs/mvp-tracker.html ]; then
-            echo "ERROR: docs/mvp-tracker.html not found in repository"
-            exit 1
-          fi
-          echo "[ok] docs/mvp-tracker.html present"
-      
-      # ── Post-sync adjustments (in case Kerrigan copy overwrote the helper) ──
-      - name: Apply post-sync fixes to HTML
-        run: |
-          set -euo pipefail
-          # insert normalizeLabels helper if absent
-          if ! grep -q "function normalizeLabels" docs/mvp-tracker.html; then
-            echo "[fix] adding normalizeLabels() helper"
-            # use ed to insert a block after fetchIssues pattern; ed handles
-            # multi-line text gracefully without fiddly quoting.
-            ed -s docs/mvp-tracker.html <<'ED'
-/async function fetchIssues()/
-+1
-a
-        function normalizeLabels(issue) {
-            return issue.labels
-                .map(l => typeof l === 'string' ? l : (l && l.name))
-                .filter(l => l && typeof l === 'string')
-                .map(l => l.toLowerCase());
-        }
-.
-w
-q
-ED
-          else
-            echo "[ok] normalizeLabels helper already present"
-          fi
-
-      # ── Commit data if changed ─────────────────────────────────────────────
-      - name: Commit and push updated data
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name  "github-actions[bot]"
-          git add docs/data/mvp-data.json
-          if git diff --cached --quiet; then
-            echo "No data changes to commit"
-          else
-            git commit -m "chore: update MVP progress data [skip ci]"
-            git push
-          fi
-
-      - name: Setup GitHub Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: 'docs'
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
-
+			- name: Deploy to GitHub Pages
+				id: deployment
+				uses: actions/deploy-pages@v4
