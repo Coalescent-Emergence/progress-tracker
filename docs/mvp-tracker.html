@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kerrigan MVP Progress Tracker</title>
+    <title>MVP Launch Readiness — Coalescent Emergence</title>
     <style>
         * {
             margin: 0;
@@ -301,293 +301,304 @@
             text-decoration: underline;
         }
         
-        .last-updated {
-            margin-top: 10px;
-            font-size: 0.85em;
-            color: #999;
+        /* ── New design tokens & layout (Projects-v2 dashboard) ─────────────── */
+        :root {
+            --brand-start: #4f46e5;
+            --brand-end:   #7c3aed;
+            --green:       #16a34a;
+            --amber:       #d97706;
+            --bg:          #f8fafc;
+            --card-bg:     #ffffff;
+            --border:      #e2e8f0;
+            --text-main:   #1e293b;
+            --text-muted:  #64748b;
+            --radius:      12px;
         }
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+        }
+        .site-header {
+            background: linear-gradient(135deg, var(--brand-start) 0%, var(--brand-end) 100%);
+            color: #fff;
+            padding: 56px 24px 48px;
+            text-align: center;
+        }
+        .site-header h1 { font-size: clamp(1.75rem, 4vw, 2.75rem); font-weight: 700; }
+        .site-header .subtitle { margin-top: 8px; font-size: 1.1rem; opacity: 0.88; }
+        .overall-section { max-width: 860px; margin: -32px auto 0; padding: 0 20px; }
+        .overall-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: 0 4px 24px rgba(79, 70, 229, 0.12);
+            padding: 36px 40px;
+        }
+        .overall-head {
+            display: flex; align-items: baseline;
+            justify-content: space-between; flex-wrap: wrap;
+            gap: 8px; margin-bottom: 20px;
+        }
+        .overall-head h2 { font-size: 1.05rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .overall-pct { font-size: 3rem; font-weight: 800; color: var(--brand-start); line-height: 1; }
+        .track { height: 22px; background: #e0e7ff; border-radius: 100px; overflow: hidden; }
+        .fill {
+            height: 100%; min-width: 2px;
+            background: linear-gradient(90deg, var(--brand-start), var(--brand-end));
+            border-radius: 100px;
+            transition: width 0.8s cubic-bezier(.4,0,.2,1);
+            display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+        }
+        .fill-label { color: #fff; font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
+        .overall-counts { display: flex; gap: 32px; margin-top: 18px; flex-wrap: wrap; }
+        .count-item .num { font-size: 1.65rem; font-weight: 700; color: var(--text-main); display: block; }
+        .count-item .lbl { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+        .initiatives-section { max-width: 1100px; margin: 48px auto; padding: 0 20px; }
+        .section-title { font-size: 1.35rem; font-weight: 700; color: var(--text-main); margin-bottom: 24px; }
+        .initiatives-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .initiative-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 24px;
+            transition: box-shadow 0.2s;
+        }
+        .initiative-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+        .init-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+        .init-title {
+            font-size: 1rem; font-weight: 600; color: var(--text-main);
+            text-decoration: none; flex: 1; line-height: 1.4;
+        }
+        .init-title:hover { color: var(--brand-start); }
+        .badge {
+            flex-shrink: 0; display: inline-block;
+            padding: 3px 10px; border-radius: 100px;
+            font-size: 0.72rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.05em; white-space: nowrap;
+        }
+        .badge-done    { background: #dcfce7; color: #15803d; }
+        .badge-active  { background: #fef9c3; color: #a16207; }
+        .badge-pending { background: #f1f5f9; color: #64748b; }
+        .init-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .init-bar-track { flex: 1; height: 10px; background: #e2e8f0; border-radius: 100px; overflow: hidden; }
+        .init-bar-fill { height: 100%; border-radius: 100px; transition: width 0.8s cubic-bezier(.4,0,.2,1); }
+        .fill-done    { background: linear-gradient(90deg, #22c55e, #16a34a); }
+        .fill-active  { background: linear-gradient(90deg, var(--brand-start), var(--brand-end)); }
+        .fill-pending { background: #cbd5e1; }
+        .init-pct { font-size: 0.85rem; font-weight: 700; width: 36px; text-align: right; color: var(--text-muted); }
+        .init-counts { font-size: 0.8rem; color: var(--text-muted); }
+        .init-counts strong { color: var(--text-main); }
+        .init-children { margin-top: 14px; display: none; }
+        .init-children.open { display: block; }
+        .toggle-children {
+            margin-top: 12px; background: none; border: none;
+            color: var(--brand-start); font-size: 0.8rem;
+            cursor: pointer; padding: 0; display: flex; align-items: center; gap: 4px;
+        }
+        .toggle-children:hover { text-decoration: underline; }
+        .children-list { list-style: none; border-top: 1px solid var(--border); padding-top: 10px; }
+        .child-item {
+            display: flex; align-items: flex-start; gap: 8px;
+            padding: 5px 0; font-size: 0.82rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .child-item:last-child { border-bottom: none; }
+        .child-icon { flex-shrink: 0; font-size: 0.85rem; margin-top: 1px; }
+        .child-link { color: var(--text-main); text-decoration: none; line-height: 1.4; }
+        .child-link:hover { color: var(--brand-start); text-decoration: underline; }
+        .child-closed { opacity: 0.55; text-decoration: line-through; }
+        .loading-state { text-align: center; padding: 80px 24px; color: var(--text-muted); }
+        .loading-spinner {
+            display: inline-block; width: 36px; height: 36px;
+            border: 3px solid #e0e7ff; border-top-color: var(--brand-start);
+            border-radius: 50%; animation: spin 0.7s linear infinite; margin-bottom: 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .error-card {
+            max-width: 520px; margin: 32px auto;
+            background: #fff1f2; border: 1px solid #fecdd3;
+            border-radius: var(--radius); padding: 24px; color: #9f1239;
+        }
+        .error-card h3 { font-size: 1rem; margin-bottom: 8px; }
+        .error-card p  { font-size: 0.88rem; line-height: 1.5; }
+        .updated-at { margin-top: 6px; font-size: 0.78rem; color: #94a3b8; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🚀 Kerrigan MVP Progress</h1>
-            <p>60-Day Timeline - Real-time tracking of our journey to launch</p>
-        </header>
-        
-        <div id="content">
-            <div class="loading">
-                <p>Loading progress data from GitHub...</p>
+
+<header class="site-header">
+    <h1>🚀 MVP Launch Readiness</h1>
+    <p class="subtitle">Coalescent Emergence &middot; Healthcare Transcription Platform</p>
+</header>
+
+<main>
+    <section class="overall-section" id="overallSection" style="display:none">
+        <div class="overall-card">
+            <div class="overall-head">
+                <h2>Overall Progress</h2>
+                <div class="overall-pct" id="overallPct">0%</div>
+            </div>
+            <div class="track">
+                <div class="fill" id="overallFill" style="width:0%">
+                    <span class="fill-label" id="overallFillLabel"></span>
+                </div>
+            </div>
+            <div class="overall-counts">
+                <div class="count-item"><span class="num" id="cntDone">0</span><span class="lbl">Completed</span></div>
+                <div class="count-item"><span class="num" id="cntOpen">0</span><span class="lbl">Remaining</span></div>
+                <div class="count-item"><span class="num" id="cntTotal">0</span><span class="lbl">Total Items</span></div>
+                <div class="count-item"><span class="num" id="cntStreams">0</span><span class="lbl">Work Streams</span></div>
             </div>
         </div>
-        
-        <footer>
-            <p>
-                <strong>Kerrigan</strong> - Healthcare Transcription Platform<br>
-                <a href="https://github.com/Coalescent-Emergence/Kerrigan" target="_blank">View Repository</a> | 
-                <a href="https://github.com/Coalescent-Emergence/Kerrigan/issues" target="_blank">View Issues</a>
-            </p>
-            <div class="last-updated" id="lastUpdated"></div>
-        </footer>
-    </div>
-    
+    </section>
+
+    <section class="initiatives-section">
+        <div id="appContent">
+            <div class="loading-state">
+                <div class="loading-spinner"></div>
+                <p>Loading latest progress data&hellip;</p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer style="background:#fff;border-top:1px solid var(--border);padding:28px 24px;text-align:center;font-size:0.85rem;color:var(--text-muted);">
+    <p>
+        <strong>Coalescent Emergence</strong> &middot; Healthcare Transcription Platform<br>
+        <a href="https://github.com/Coalescent-Emergence/Kerrigan" target="_blank" rel="noopener" style="color:var(--brand-start);text-decoration:none">View Repository</a>
+        &nbsp;&middot;&nbsp;
+        <a href="https://github.com/Coalescent-Emergence/Kerrigan/issues" target="_blank" rel="noopener" style="color:var(--brand-start);text-decoration:none">View Issues</a>
+    </p>
+    <p class="updated-at" id="updatedAt"></p>
+</footer>
+
     <script>
-        const DATA_URL = 'data/issues.json';
-        
-        // MVP milestones based on 60-day timeline
-        // Note: 'days' property is for reference only and not displayed in stakeholder view
-        // Individual timeframes are internal - only overall 60-day timeline is shown
-        const MVP_MILESTONES = {
-            'Phase 1: Foundation': {
-                description: 'Infrastructure & security setup',
-                days: 'Days 1-20'
-            },
-            'Phase 2: Core Features': {
-                description: 'Transcription, real-time features, and hardening',
-                days: 'Days 21-50'
-            },
-            'Phase 3: Launch': {
-                description: 'Testing, refinement, and deployment',
-                days: 'Days 51-60'
-            }
-        };
-        
-        async function fetchIssues() {
-            try {
-                const response = await fetch(DATA_URL);
-                if (!response.ok) {
-                    throw new Error(`Tracker data error: ${response.status}`);
-                }
-                return await response.json();
-            } catch (error) {
-                console.error('Error fetching issues:', error);
-                throw error;
-            }
-        }
-        
-        function categorizeIssue(issue) {
-            const labels = issue.labels.map(l => l.name.toLowerCase());
-            const title = issue.title.toLowerCase();
-            
-            // Determine phase based on task number and content
-            if (title.includes('t1') || title.includes('capture')) {
-                return 'Phase 1: Foundation';
-            } else if (title.includes('t2') || title.includes('t3') || title.includes('audio')) {
-                return 'Phase 1: Foundation';
-            } else if (title.includes('t4') || title.includes('t5') || title.includes('upload') || title.includes('orchestration')) {
-                return 'Phase 2: Core Features';
-            } else if (title.includes('t6') || title.includes('diarization')) {
-                return 'Phase 2: Core Features';
-            } else if (title.includes('t7') || title.includes('t8') || title.includes('t9') || title.includes('compliance') || title.includes('deployment')) {
-                return 'Phase 3: Launch';
-            }
-            
-            // Default categorization based on labels
-            if (labels.some(l => l.includes('auth') || l.includes('foundation'))) {
-                return 'Phase 1: Foundation';
-            } else if (labels.some(l => l.includes('core') || l.includes('audio') || l.includes('transcription'))) {
-                return 'Phase 2: Core Features';
-            } else if (labels.some(l => l.includes('compliance') || l.includes('deploy') || l.includes('infra'))) {
-                return 'Phase 3: Launch';
-            }
-            
-            return 'Phase 3: Launch'; // Default
-        }
-        
-        function getPriority(issue) {
-            const labels = issue.labels.map(l => l.name.toLowerCase());
-            if (labels.includes('p0')) return 'p0';
-            if (labels.includes('p1')) return 'p1';
-            if (labels.includes('p2')) return 'p2';
-            return 'p3';
-        }
-        
-        function getEffort(issue) {
-            const labels = issue.labels.map(l => l.name.toLowerCase());
-            if (labels.some(l => l.includes('effort:s'))) return 's';
-            if (labels.some(l => l.includes('effort:m'))) return 'm';
-            if (labels.some(l => l.includes('effort:l'))) return 'l';
-            return 'm'; // default
-        }
-        
-        function renderProgress(issues) {
-            const totalIssues = issues.length;
-            const closedIssues = issues.filter(i => i.state === 'closed').length;
-            const openIssues = totalIssues - closedIssues;
-            const percentComplete = totalIssues > 0 ? Math.round((closedIssues / totalIssues) * 100) : 0;
-            
-            // Group issues by milestone
-            const milestones = {};
-            for (const milestone in MVP_MILESTONES) {
-                milestones[milestone] = {
-                    ...MVP_MILESTONES[milestone],
-                    issues: []
-                };
-            }
-            
-            issues.forEach(issue => {
-                const milestone = categorizeIssue(issue);
-                if (milestones[milestone]) {
-                    milestones[milestone].issues.push(issue);
-                }
-            });
-            
-            // Generate HTML
-            let html = `
-                <div class="progress-overview">
-                    <div class="progress-stats">
-                        <div class="stat-card">
-                            <h3>Total Progress</h3>
-                            <div class="number">${percentComplete}%</div>
-                            <div class="label">Complete</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Completed</h3>
-                            <div class="number">${closedIssues}</div>
-                            <div class="label">Tasks Done</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>In Progress</h3>
-                            <div class="number">${openIssues}</div>
-                            <div class="label">Tasks Remaining</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Total Tasks</h3>
-                            <div class="number">${totalIssues}</div>
-                            <div class="label">MVP Scope</div>
-                        </div>
-                    </div>
-                    
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-label">
-                            <span>Overall MVP Progress</span>
-                            <span>${closedIssues} of ${totalIssues} tasks completed</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${percentComplete}%">
-                                ${percentComplete > 10 ? percentComplete + '%' : ''}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="milestones">
-                    <h2>📋 MVP Milestones & Tasks</h2>
-            `;
-            
-            // Render each milestone
-            for (const [milestoneName, milestoneData] of Object.entries(milestones)) {
-                const milestoneIssues = milestoneData.issues;
-                const completed = milestoneIssues.filter(i => i.state === 'closed').length;
-                const total = milestoneIssues.length;
-                const status = completed === total && total > 0 ? 'completed' : 
-                              completed > 0 ? 'in-progress' : 'pending';
-                const statusText = completed === total && total > 0 ? 'Completed' :
-                                  completed > 0 ? 'In Progress' : 'Pending';
-                
-                html += `
-                    <div class="milestone">
-                        <h3>
-                            ${milestoneName}
-                            <span class="milestone-status ${status}">${statusText}</span>
-                        </h3>
-                        <p style="color: #6c757d; margin-bottom: 10px;">
-                            ${milestoneData.description}
-                            ${total > 0 ? ` - ${completed}/${total} tasks completed` : ''}
-                        </p>
-                `;
-                
-                if (milestoneIssues.length > 0) {
-                    html += '<ul class="task-list">';
-                    
-                    // Sort issues: open first, then by priority
-                    const sortedIssues = milestoneIssues.sort((a, b) => {
-                        if (a.state !== b.state) {
-                            return a.state === 'open' ? -1 : 1;
-                        }
-                        const priorityOrder = { p0: 0, p1: 1, p2: 2, p3: 3 };
-                        return priorityOrder[getPriority(a)] - priorityOrder[getPriority(b)];
-                    });
-                    
-                    sortedIssues.forEach(issue => {
-                        const isCompleted = issue.state === 'closed';
-                        const priority = getPriority(issue);
-                        const effort = getEffort(issue);
-                        
-                        html += `
-                            <li class="task-item ${isCompleted ? 'completed' : ''}">
-                                <div class="task-checkbox ${isCompleted ? 'completed' : 'pending'}">
-                                    ${isCompleted ? '✅' : '⬜'}
-                                </div>
-                                <div class="task-content">
-                                    <div class="task-title">
-                                        <a href="${issue.html_url}" target="_blank" style="color: inherit; text-decoration: none;">
-                                            ${issue.title}
-                                        </a>
-                                    </div>
-                                    <div class="task-meta">
-                                        <span>Issue #${issue.number}</span>
-                                        <span class="task-tag priority-${priority}">Priority: ${priority.toUpperCase()}</span>
-                                        <span class="task-tag effort-${effort}">Effort: ${effort.toUpperCase()}</span>
-                                        ${isCompleted ? '<span style="color: #28a745;">✓ Completed</span>' : ''}
-                                    </div>
-                                </div>
-                            </li>
-                        `;
-                    });
-                    
-                    html += '</ul>';
-                } else {
-                    html += '<p style="color: #6c757d; font-style: italic;">No tasks assigned to this milestone yet.</p>';
-                }
-                
-                html += '</div>';
-            }
-            
-            html += '</div>';
-            
-            return html;
-        }
-        
-        async function init() {
-            const contentEl = document.getElementById('content');
-            const lastUpdatedEl = document.getElementById('lastUpdated');
-            
-            try {
-                const issues = await fetchIssues();
-                
-                // Filter out the tracker issue itself (#14) and other meta issues
-                const mvpIssues = issues.filter(issue => {
-                    const title = issue.title.toLowerCase();
-                    const labels = issue.labels.map(l => l.name.toLowerCase());
-                    
-                    // Exclude the tracker issue and investigate issues
-                    if (issue.number === 14) return false;
-                    if (title.includes('investigate') && !title.includes('t1')) return false;
-                    
-                    return true;
-                });
-                
-                contentEl.innerHTML = renderProgress(mvpIssues);
-                
-                const now = new Date();
-                lastUpdatedEl.textContent = `Last updated: ${now.toLocaleString()}`;
-            } catch (error) {
-                contentEl.innerHTML = `
-                    <div class="error">
-                        <h3>⚠️ Error Loading Data</h3>
-                        <p>Unable to fetch issues from GitHub. Please try refreshing the page.</p>
-                        <p><small>${error.message}</small></p>
-                    </div>
-                `;
-            }
-        }
-        
-        // Initialize on load
-        init();
-        
-        // Auto-refresh every 5 minutes
-        setInterval(init, 5 * 60 * 1000);
-    </script>
+  // ── Configuration ────────────────────────────────────────────────────────────
+  const DATA_URL = 'data/mvp-data.json';
+  const REFRESH_MS = 5 * 60 * 1000;
+
+  // ── Helpers ──────────────────────────────────────────────────────────────────
+  function statusClass(s) {
+    return s === 'completed' ? 'done' : s === 'in_progress' ? 'active' : 'pending';
+  }
+  function statusLabel(s) {
+    return s === 'completed' ? 'Done' : s === 'in_progress' ? 'In Progress' : 'Not Started';
+  }
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function formatDate(iso) {
+    try { return new Date(iso).toLocaleString(undefined,
+      { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' });
+    } catch { return iso; }
+  }
+
+  // ── Fetch ────────────────────────────────────────────────────────────────────
+  async function fetchData() {
+    const resp = await fetch(DATA_URL + '?v=' + Date.now());
+    if (!resp.ok) throw new Error('HTTP ' + resp.status + ' fetching progress data');
+    return resp.json();
+  }
+
+  // ── Overall bar ───────────────────────────────────────────────────────────────
+  function renderOverall(overall) {
+    const pct = overall.percent_complete || 0;
+    document.getElementById('overallPct').textContent = pct + '%';
+    const fill = document.getElementById('overallFill');
+    fill.style.width = pct + '%';
+    document.getElementById('overallFillLabel').textContent = pct > 12 ? pct + '%' : '';
+    document.getElementById('cntDone').textContent   = overall.closed_items || 0;
+    document.getElementById('cntOpen').textContent   = (overall.total_items || 0) - (overall.closed_items || 0);
+    document.getElementById('cntTotal').textContent  = overall.total_items || 0;
+    document.getElementById('cntStreams').textContent = overall.total_initiatives || 0;
+    document.getElementById('overallSection').style.display = '';
+  }
+
+  // ── Initiative cards ──────────────────────────────────────────────────────────
+  function renderInitiatives(initiatives) {
+    if (!initiatives || !initiatives.length)
+      return '<p style="color:var(--text-muted);text-align:center;padding:40px 0">No data available yet.</p>';
+
+    const cards = initiatives.map((init, idx) => {
+      const sc  = statusClass(init.status);
+      const pct = init.percent || 0;
+      const children = init.children || [];
+
+      const childHtml = children.length
+        ? '<ul class="children-list">' + children.map(c => {
+            const closed = c.state === 'closed';
+            return '<li class="child-item">'
+              + '<span class="child-icon">' + (closed ? '✅' : '⬜') + '</span>'
+              + '<a href="' + (c.url||'#') + '" target="_blank" rel="noopener" '
+              + 'class="child-link' + (closed ? ' child-closed' : '') + '">'
+              + '#' + c.number + ' ' + escHtml(c.title) + '</a></li>';
+          }).join('') + '</ul>'
+        : '<p style="font-size:0.8rem;color:var(--text-muted);padding:6px 0">No child items tracked yet.</p>';
+
+      const toggleBtn = children.length
+        ? '<button class="toggle-children" data-idx="' + idx + '" aria-expanded="false">'
+          + '<span class="toggle-icon">\u25b8</span> Show ' + children.length
+          + ' item' + (children.length !== 1 ? 's' : '') + '</button>'
+        : '';
+
+      return '<div class="initiative-card">'
+        + '<div class="init-header">'
+        + '<a href="' + (init.url||'#') + '" target="_blank" rel="noopener" class="init-title">'
+        + escHtml(init.title) + '</a>'
+        + '<span class="badge badge-' + sc + '">' + statusLabel(init.status) + '</span>'
+        + '</div>'
+        + '<div class="init-bar-row">'
+        + '<div class="init-bar-track"><div class="init-bar-fill fill-' + sc + '" style="width:' + pct + '%"></div></div>'
+        + '<div class="init-pct">' + pct + '%</div>'
+        + '</div>'
+        + '<div class="init-counts"><strong>' + init.closed + '</strong> of <strong>' + init.total + '</strong> items complete</div>'
+        + toggleBtn
+        + '<div class="init-children" id="children-' + idx + '">' + childHtml + '</div>'
+        + '</div>';
+    });
+
+    return '<h2 class="section-title">Work Streams</h2>'
+      + '<div class="initiatives-grid">' + cards.join('') + '</div>';
+  }
+
+  // ── Toggle children ───────────────────────────────────────────────────────────
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.toggle-children');
+    if (!btn) return;
+    var panel = document.getElementById('children-' + btn.dataset.idx);
+    var open  = panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+    var cnt = panel.querySelectorAll('.child-item').length;
+    btn.innerHTML = '<span class="toggle-icon">' + (open ? '\u25be' : '\u25b8') + '</span> '
+      + (open ? 'Hide' : 'Show') + ' ' + cnt + ' item' + (cnt !== 1 ? 's' : '');
+  });
+
+  // ── Main ─────────────────────────────────────────────────────────────────────
+  async function init() {
+    const content = document.getElementById('appContent');
+    try {
+      const data = await fetchData();
+      renderOverall(data.overall);
+      content.innerHTML = renderInitiatives(data.initiatives);
+      document.getElementById('updatedAt').textContent =
+        data.generated_at ? 'Data last updated: ' + formatDate(data.generated_at)
+                          : 'Loaded: ' + new Date().toLocaleString();
+    } catch (err) {
+      console.error(err);
+      document.getElementById('overallSection').style.display = 'none';
+      content.innerHTML = '<div class="error-card"><h3>\u26a0\ufe0f Unable to Load Data</h3>'
+        + '<p>Progress data could not be fetched. It will retry automatically.</p>'
+        + '<p style="margin-top:8px"><small>' + escHtml(err.message) + '</small></p></div>';
+    }
+  }
+
+  init();
+  setInterval(init, REFRESH_MS);
+
+  // ── Legacy stubs (unused but kept to avoid console errors from old bookmarks) ──
+  const _UNUSED_MVP_MILESTONES = {
+  }; // _UNUSED_MVP_MILESTONES
+</script>
 </body>
 </html>
