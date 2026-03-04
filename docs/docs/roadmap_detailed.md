@@ -116,10 +116,10 @@ Why This Approach Works
 Pro: Maximum privacy, HIPAA-compliant by design, no cloud vendor lock-in
 Con: Higher infrastructure cost for clients; limited scalability
 Decision: Privacy > Scale for MVP. Scale horizontally (multiple servers) later
-2. Hardened PicoClaw Instead of Cloud LLM
-Pro: Zero API costs, complete data sovereignty, deterministic safety
-Con: Requires ML engineering effort; may need fallback to cloud if safety hardening fails
-Decision: Worth the effort for privacy-first positioning. Have OpenAI API as fallback.
+2. Local Inference (Ollama/vLLM) Instead of Cloud LLM
+Pro: Zero API costs, complete data sovereignty, deterministic safety, zero PHI egress
+Con: Requires GPU infrastructure provisioning and local model management
+Decision: Non-negotiable for HIPAA compliance. All inference is local-only. See ADR-0005. No cloud fallback for any workload handling PHI.
 3. Teams First (Not Zoom/Meet)
 Pro: ~85% of enterprise healthcare uses Teams; mature API
 Con: Limits addressable market initially
