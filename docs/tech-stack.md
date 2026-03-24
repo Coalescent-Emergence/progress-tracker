@@ -4,7 +4,7 @@
 
 Last Updated: February 12, 2026
 
-## Core Technology: Go 1.23+
+## Core Technology: Go 1.26.1
 
 **Decision**: Use Go as the primary programming language for Kerrigan backend.
 
@@ -260,7 +260,7 @@ air
 
 **Build Tool**: `go build` (no need for Make unless multi-step)
 
-**CI**: GitHub Actions with Go 1.23 setup  
+**CI**: GitHub Actions with Go 1.26.1 setup  
 **Coverage**: `go test ./... -coverprofile=coverage.out`  
 **Target**: >80% coverage for production code
 

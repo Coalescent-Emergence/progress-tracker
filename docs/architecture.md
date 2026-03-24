@@ -467,7 +467,7 @@ CREATE TABLE audit_logs (
 See [tech-stack.md](./tech-stack.md) for detailed rationale.
 
 **Core**:
-- Go 1.23+
+- Go 1.26.1
 - Chi router (lightweight, middleware-friendly)
 - pgx (PostgreSQL driver, fastest performance)
 
